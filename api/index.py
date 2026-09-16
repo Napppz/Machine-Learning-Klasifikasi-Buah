@@ -23,10 +23,13 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from src.predict_onnx import predict_image_onnx
 
+template_dir = CURRENT_DIR / "templates" if (CURRENT_DIR / "templates").exists() else PROJECT_ROOT / "templates"
+static_dir = CURRENT_DIR / "static" if (CURRENT_DIR / "static").exists() else PROJECT_ROOT / "static"
+
 app = Flask(
     __name__,
-    template_folder=str(PROJECT_ROOT / "templates"),
-    static_folder=str(PROJECT_ROOT / "static")
+    template_folder=str(template_dir),
+    static_folder=str(static_dir)
 )
 CORS(app)
 
@@ -142,7 +145,8 @@ def index():
 
 @app.route("/static/<path:filename>")
 def serve_static(filename):
-    return send_from_directory(str(PROJECT_ROOT / "static"), filename)
+    target = CURRENT_DIR / "static" if (CURRENT_DIR / "static").exists() else PROJECT_ROOT / "static"
+    return send_from_directory(str(target), filename)
 
 @app.route("/samples", methods=["GET"])
 def get_samples():

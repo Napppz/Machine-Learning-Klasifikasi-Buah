@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FruitFresh AI — Klasifikasi Kesegaran Buah Berbasis Deep Learning</title>
+    <meta name="description" content="Sistem kecerdasan buatan berbasis MobileNetV2 untuk klasifikasi kualitas dan kesegaran buah apel, pisang, dan jeruk secara real-time.">
+    
+    <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%20width=%2232%22%20height=%2232%22><text y=%2226%22 font-size=%2226%22>🍏</text></svg>">
+    
+    <!-- Chart.js 4.x for Interactive QC Analytics Dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+    <!-- Floating Particles Canvas (Fitur 6: Partikel Mengambang) -->
+    <canvas id="particles-canvas" class="particles-canvas"></canvas>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <!-- Navigation Bar -->
+    <header class="navbar-wrapper">
+        <nav class="navbar container">
+            <a href="#beranda" class="nav-brand">
+                <div class="brand-icon">🍏</div>
+                <span class="brand-text">FruitFresh <span class="brand-highlight">AI</span></span>
+            </a>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="#beranda" class="nav-link active">Beranda</a></li>
+                <li><a href="#kategori" class="nav-link">Kategori</a></li>
+                <li><a href="#tentang" class="nav-link">Tentang</a></li>
+                <li><a href="#dashboard" class="nav-link">Dashboard</a></li>
+                <li><a href="#teknologi" class="nav-link">Teknologi</a></li>
+                <li><a href="#deteksi" class="nav-link btn-nav-cta">Deteksi Buah</a></li>
+            </ul>
+
+            <!-- Fitur 4: Dark/Light Mode Toggle -->
+            <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark/Light Mode" title="Ubah Tema">
+                <span class="theme-icon-sun">☀️</span>
+                <span class="theme-icon-moon">🌙</span>
+                <div class="theme-toggle-slider"></div>
+            </button>
+
+            <div class="nav-hamburger" id="nav-hamburger" aria-label="Toggle Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- HERO SECTION -->
+        <section id="beranda" class="hero-section">
+            <div class="hero-backdrop-glow"></div>
+            <div class="container hero-content">
+                <!-- Pill Badge -->
+                <div class="hero-pill-badge" data-reveal>
+                    <span class="pill-icon">🚀</span>
+                    <span>Teknologi AI Terdepan untuk Kesegaran Buah</span>
+                </div>
+
+                <!-- Headline -->
+                <h1 class="hero-title" data-reveal>
+                    Klasifikasi<br>
+                    <span class="hero-title-highlight">Kesegaran Buah</span><br>
+                    dengan AI
+                </h1>
+
+                <!-- Subtitle -->
+                <p class="hero-subtitle" data-reveal>
+                    Revolusi teknologi CNN dengan arsitektur MobileNetV2 untuk mengidentifikasi kesegaran dan jenis buah dengan akurasi 97.4% dan kecepatan optimal.
+                </p>
+
+                <!-- CTA Buttons -->
+                <div class="hero-cta-group" data-reveal>
+                    <a href="#deteksi" class="btn-primary-pill">
+                        <span>Coba Sekarang</span>
+                        <span class="arrow-icon">→</span>
+                    </a>
+                    <a href="#tentang" class="btn-secondary-pill">
+                        <span class="info-icon">ⓘ</span>
+                        <span>Pelajari Lebih Lanjut</span>
+                    </a>
+                </div>
+
+                <!-- Stats Row -->
+                <div class="hero-stats-grid" data-reveal>
+                    <div class="stat-card tilt-card">
+                        <div class="stat-value">97.4%</div>
+                        <div class="stat-label">Akurasi Uji</div>
+                    </div>
+                    <div class="stat-card tilt-card">
+                        <div class="stat-value">&lt;50ms</div>
+                        <div class="stat-label">Kecepatan</div>
+                    </div>
+                    <div class="stat-card tilt-card">
+                        <div class="stat-value">6</div>
+                        <div class="stat-label">Kategori Buah</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- KATEGORI BUAH SECTION (Grid 2x3) -->
+        <section id="kategori" class="kategori-section">
+            <div class="container">
+                <div class="kategori-container-card" data-reveal>
+                    <div class="kategori-card-header">
+                        <span class="kategori-badge">Klasifikasi 6 Kategori Buah</span>
+                        <h2 class="kategori-title">Varian Komoditas &amp; Kualitas Buah</h2>
+                        <p class="kategori-desc">Didukung dataset 13.599 citra berstandar riset internasional untuk klasifikasi kondisi buah segar vs busuk.</p>
+                    </div>
+
+                    <div class="kategori-grid">
+                        <!-- 1. Fresh Apple -->
+                        <div class="fruit-item-card tilt-card" data-sample="fresh_apple.png">
+                            <div class="fruit-item-icon-wrap">
+                                <span class="fruit-item-icon">🍏</span>
+                            </div>
+                            <div class="fruit-item-info">
+                                <div class="fruit-item-name">Fresh Apple</div>
+                                <div class="fruit-item-subtitle">Kondisi Segar &amp; Prima</div>
+                            </div>
+                            <span class="fruit-quick-tag tag-fresh">Segar</span>
+                        </div>
+
+                        <!-- 2. Rotten Apple -->
+                        <div class="fruit-item-card tilt-card" data-sample="rotten_apple.png">
+                            <div class="fruit-item-icon-wrap">
+                                <span class="fruit-item-icon">🍎</span>
+                            </div>
+                            <div class="fruit-item-info">
+                                <div class="fruit-item-name">Rotten Apple</div>
+                                <div class="fruit-item-subtitle">Terindikasi Rusak / Busuk</div>
+                            </div>
+                            <span class="fruit-quick-tag tag-rotten">Busuk</span>
+                        </div>
+
+                        <!-- 3. Fresh Banana -->
+                        <div class="fruit-item-card tilt-card" data-sample="fresh_banana.png">
+                            <div class="fruit-item-icon-wrap">
+                                <span class="fruit-item-icon">🍌</span>
+                            </div>
+                            <div class="fruit-item-info">
+                                <div class="fruit-item-name">Fresh Banana</div>
+                                <div class="fruit-item-subtitle">Matang Sempurna &amp; Manis</div>
+                            </div>
+                            <span class="fruit-quick-tag tag-fresh">Segar</span>
+                        </div>
+
+                        <!-- 4. Rotten Banana -->
+                        <div class="fruit-item-card tilt-card" data-sample="rotten_banana.png">
+                            <div class="fruit-item-icon-wrap">
+                                <span class="fruit-item-icon">🍌</span>
+                            </div>
+                            <div class="fruit-item-info">
+                                <div class="fruit-item-name">Rotten Banana</div>
+                                <div class="fruit-item-subtitle">Terlalu Matang / Busuk</div>
+                            </div>
+                            <span class="fruit-quick-tag tag-rotten">Busuk</span>
+                        </div>
+
+                        <!-- 5. Fresh Orange -->
+                        <div class="fruit-item-card tilt-card" data-sample="fresh_orange.png">
+                            <div class="fruit-item-icon-wrap">
+                                <span class="fruit-item-icon">🍊</span>
+                            </div>
+                            <div class="fruit-item-info">
+                                <div class="fruit-item-name">Fresh Orange</div>
+                                <div class="fruit-item-subtitle">Segar &amp; Kaya Vitamin C</div>
+                            </div>
+                            <span class="fruit-quick-tag tag-fresh">Segar</span>
+                        </div>
+
+                        <!-- 6. Rotten Orange -->
+                        <div class="fruit-item-card tilt-card" data-sample="rotten_orange.png">
+                            <div class="fruit-item-icon-wrap">
+                                <span class="fruit-item-icon">🍊</span>
+                            </div>
+                            <div class="fruit-item-info">
+                                <div class="fruit-item-name">Rotten Orange</div>
+                                <div class="fruit-item-subtitle">Berjamur / Penurunan Kualitas</div>
+                            </div>
+                            <span class="fruit-quick-tag tag-rotten">Busuk</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MENGAPA MEMILIH FRUITFRESH AI -->
+        <section id="tentang" class="features-section">
+            <div class="container">
+                <div class="features-container-card" data-reveal>
+                    <h2 class="features-card-title">Mengapa Memilih FruitFresh AI?</h2>
+                    
+                    <div class="feature-list">
+                        <!-- Feature 1 -->
+                        <div class="feature-row">
+                            <div class="feature-check-circle">✓</div>
+                            <div class="feature-text">
+                                <div class="feature-heading">Teknologi Deep Learning Terdepan</div>
+                                <div class="feature-sub">Menggunakan arsitektur CNN MobileNetV2 state-of-the-art dengan transfer learning dan fine-tuning untuk akurasi optimal 97.40%.</div>
+                            </div>
+                        </div>
+
+                        <!-- Feature 2 -->
+                        <div class="feature-row">
+                            <div class="feature-check-circle">✓</div>
+                            <div class="feature-text">
+                                <div class="feature-heading">Dataset Komprehensif</div>
+                                <div class="feature-sub">Dilatih dengan 13.599 citra buah berkualitas tinggi dari berbagai kondisi pencahayaan dan rotasi sudut nyata.</div>
+                            </div>
+                        </div>
+
+                        <!-- Feature 3 -->
+                        <div class="feature-row">
+                            <div class="feature-check-circle">✓</div>
+                            <div class="feature-text">
+                                <div class="feature-heading">Explainable AI (Grad-CAM)</div>
+                                <div class="feature-sub">Menyediakan transparansi diagnostik dengan visualisasi heatmap aktivasi fitur pada citra buah yang diuji.</div>
+                            </div>
+                        </div>
+
+                        <!-- Feature 4 -->
+                        <div class="feature-row">
+                            <div class="feature-check-circle">✓</div>
+                            <div class="feature-text">
+                                <div class="feature-heading">Optimasi Multi-Platform &amp; TFLite</div>
+                                <div class="feature-sub">Tersedia model Keras full-precision serta versi TFLite quantized berukuran hanya 2.58 MB (76.8% lebih ringan) untuk edge device.</div>
+                            </div>
+                        </div>
+
+                        <!-- Feature 5 -->
+                        <div class="feature-row">
+                            <div class="feature-check-circle">✓</div>
+                            <div class="feature-text">
+                                <div class="feature-heading">Format Gambar Fleksibel &amp; Respon Cepat</div>
+                                <div class="feature-sub">Mendukung JPG, PNG, JPEG serta tangkapan kamera langsung dengan waktu inferensi super cepat di bawah 50 milidetik.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- INTERACTIVE DETECTION & CLASSIFICATION -->
+        <section id="deteksi" class="detection-section">
+            <div class="container">
+                
+                <!-- Section Header Pill -->
+                <div class="section-center-pill" data-reveal>
+                    <span class="pill-dot">●</span>
+                    <span>Klasifikasi Buah</span>
+                    <span class="pill-arrow">→</span>
+                </div>
+
+                <!-- Input Upload Card -->
+                <div class="detection-input-card" data-reveal>
+                    <div class="card-inner-header">
+                        <h3 class="input-card-title">Pilih Gambar Buah</h3>
+                        <p class="input-card-subtitle">Unggah citra buah dari galeri, gunakan kamera, atau pilih salah satu sampel uji instan di bawah ini.</p>
+                        <!-- Scope Notice Badge -->
+                        <div class="scope-info-notice">
+                            <span class="scope-badge">ℹ️ Cakupan Model</span>
+                            <span class="scope-text">Sistem saat ini dilatih khusus untuk 3 komoditas buah: <strong>Apel</strong>, <strong>Pisang</strong>, dan <strong>Jeruk</strong> (kondisi Segar &amp; Busuk).</span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Sample Selector -->
+                    <div class="quick-samples-wrapper">
+                        <span class="quick-samples-label">Uji Sampel Cepat:</span>
+                        <div class="quick-samples-chips" id="quick-samples-chips">
+                            <button type="button" class="sample-chip" data-sample="fresh_apple.png">🍏 Apel Segar</button>
+                            <button type="button" class="sample-chip" data-sample="rotten_apple.png">🍎 Apel Busuk</button>
+                            <button type="button" class="sample-chip" data-sample="fresh_banana.png">🍌 Pisang Segar</button>
+                            <button type="button" class="sample-chip" data-sample="rotten_banana.png">🍌 Pisang Busuk</button>
+                            <button type="button" class="sample-chip" data-sample="fresh_orange.png">🍊 Jeruk Segar</button>
+                            <button type="button" class="sample-chip" data-sample="rotten_orange.png">🍊 Jeruk Busuk</button>
+                        </div>
+                    </div>
+
+                    <!-- Drag & Drop Zone -->
+                    <div class="dropzone" id="dropzone">
+                        <input type="file" id="file-input" accept="image/png, image/jpeg, image/jpg" style="display: none;">
+                        <div class="dropzone-content" id="dropzone-content">
+                            <div class="dropzone-icon">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                            </div>
+                            <div class="dropzone-title">Seret &amp; Lepaskan Gambar ke Sini</div>
+                            <div class="dropzone-sub">atau <span class="browse-link">Jelajahi File</span> dari komputer Anda</div>
+                            <div class="dropzone-hint">Mendukung format JPG, PNG, JPEG (Maks. 10MB)</div>
+                        </div>
+
+                        <!-- Image Preview Box -->
+                        <div class="preview-box" id="preview-box" style="display: none;">
+                            <div class="preview-inner">
+                                <img id="image-preview" src="" alt="Preview Gambar Buah">
+                            </div>
+                            <div class="preview-actions">
+                                <button type="button" id="btn-remove-image" class="btn-remove-img">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                    <span>Hapus Gambar</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons Row -->
+                    <div class="classify-action-wrapper">
+                        <button type="button" id="btn-classify" class="btn-classify-pill" disabled>
+                            <span class="btn-pill-dot">●</span>
+                            <span id="btn-classify-text">Klasifikasi Buah</span>
+                            <span class="btn-pill-arrow">→</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Fitur 2: LIVE WEBCAM SCANNER SECTION -->
+                <div class="webcam-section" data-reveal>
+                    <div class="webcam-card">
+                        <div class="webcam-header">
+                            <div class="webcam-header-left">
+                                <div class="webcam-icon-badge">📷</div>
+                                <div>
+                                    <h3 class="webcam-title">Live Webcam Scanner</h3>
+                                    <p class="webcam-subtitle">Scan buah secara langsung menggunakan kamera perangkat Anda</p>
+                                </div>
+                            </div>
+                            <div class="webcam-header-actions">
+                                <button type="button" id="btn-webcam-switch" class="btn-webcam-action" title="Ganti Kamera Depan / Belakang" style="display: none;">
+                                    <span class="webcam-action-icon">🔄</span>
+                                    <span class="webcam-action-text">Ganti Kamera</span>
+                                </button>
+                                <button type="button" id="btn-webcam-toggle" class="btn-webcam-toggle">
+                                    <span id="webcam-toggle-text">Aktifkan Kamera</span>
+                                    <span class="webcam-toggle-icon">📹</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="webcam-body" id="webcam-body" style="display: none;">
+                            <div class="webcam-viewport">
+                                <video id="webcam-video" autoplay playsinline></video>
+                                <canvas id="webcam-canvas" style="display: none;"></canvas>
+                                <!-- Scanning Animation & YOLO-Style HUD Overlay -->
+                                <div class="scan-overlay" id="scan-overlay">
+                                    <div class="scan-line" id="scan-line"></div>
+                                    <div class="scan-corners">
+                                        <div class="scan-corner tl"></div>
+                                        <div class="scan-corner tr"></div>
+                                        <div class="scan-corner bl"></div>
+                                        <div class="scan-corner br"></div>
+                                    </div>
+                                    <!-- YOLO Target Tracking Box (Dynamic Live HUD) -->
+                                    <div class="yolo-hud-box" id="yolo-hud-box" style="display: none;">
+                                        <div class="yolo-hud-tag" id="yolo-hud-tag">
+                                            <span class="yolo-tag-dot" id="yolo-tag-dot"></span>
+                                            <span class="yolo-tag-title" id="yolo-tag-title">Memindai...</span>
+                                            <span class="yolo-tag-conf" id="yolo-tag-conf">--%</span>
+                                        </div>
+                                        <div class="yolo-hud-metrics" id="yolo-hud-metrics">
+                                            <span class="yolo-metric-item" id="yolo-metric-fps">⚡ Stream Aktif</span>
+                                            <span class="yolo-metric-item" id="yolo-metric-lat">⏱️ --ms</span>
+                                        </div>
+                                    </div>
+                                    <div class="scan-label" id="scan-label">Posisikan buah di dalam area scan</div>
+                                </div>
+                            </div>
+                            <div class="webcam-actions">
+                                <div class="webcam-controls-row">
+                                    <button type="button" id="btn-webcam-capture" class="btn-webcam-capture" title="Ambil Foto Statis">
+                                        <span class="capture-ring"></span>
+                                        <span class="capture-inner"></span>
+                                    </button>
+                                    <button type="button" id="btn-webcam-live" class="btn-webcam-live" title="Mulai / Hentikan Deteksi Real-Time">
+                                        <span class="live-dot-pulse"></span>
+                                        <span id="webcam-live-text">Deteksi Real-Time (YOLO Mode)</span>
+                                        <span class="live-badge-chip">LIVE</span>
+                                    </button>
+                                </div>
+                                <p class="webcam-capture-hint" id="webcam-hint-text">Tekan tombol foto untuk analisis detail, atau aktifkan Deteksi Real-Time untuk scan otomatis</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RESULT CARD SECTION (Streamlined Executive Layout & Progressive Tabs) -->
+                <div class="detection-result-card" id="result-card" style="display: none;">
+                    
+                    <!-- KARTU PENOLAKAN OTOMATIS OOD (Keyakinan < 60%) -->
+                    <div class="ood-rejection-card" id="ood-rejection-card" style="display: none;">
+                        <div class="ood-header">
+                            <div class="ood-badge-pill">
+                                <span class="ood-pulse-dot"></span>
+                                <span>STATUS: OBJEK DITOLAK / DI LUAR CAKUPAN TARGET</span>
+                            </div>
+                            <h3 class="ood-title">Citra Tidak Dapat Diklasifikasikan</h3>
+                            <p class="ood-subtitle">
+                                Sistem menolak membuat prediksi spekulatif karena tingkat keyakinan tertinggi hanya 
+                                <strong id="ood-confidence-display" class="highlight-ood">--%</strong> (di bawah ambang batas aman <strong>60.0%</strong>).
+                            </p>
+                        </div>
+
+                        <div class="ood-diagnostics-grid">
+                            <div class="ood-diag-card">
+                                <div class="diag-icon">❌</div>
+                                <div class="diag-content">
+                                    <h5>Bukan Komoditas Target</h5>
+                                    <p>Sistem mendeteksi kemungkinan besar objek pada citra <strong>bukan Apel, Pisang, atau Jeruk</strong> (misal: buah lain, hewan, atau benda mati).</p>
+                                </div>
+                            </div>
+                            <div class="ood-diag-card">
+                                <div class="diag-icon">⚠️</div>
+                                <div class="diag-content">
+                                    <h5>Kualitas / Sudut Citra</h5>
+                                    <p>Foto mungkin memiliki pencahayaan minim, blur, pantulan cahaya tajam, atau sudut pandang yang menutupi tekstur khas buah.</p>
+                                </div>
+                            </div>
+                            <div class="ood-diag-card">
+                                <div class="diag-icon">🛡️</div>
+                                <div class="diag-content">
+                                    <h5>Standar Integritas AI (OOD)</h5>
+                                    <p>Sesuai kaidah *Out-of-Distribution Rejection*, model menolak tebakan acak demi mencegah *False Positive* dalam operasional QC.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ood-actions">
+                            <a href="#kategori" class="btn-ood-action btn-ood-primary">
+                                <span>Lihat 3 Buah yang Didukung</span>
+                                <span>🍏🍌🍊</span>
+                            </a>
+                            <button type="button" class="btn-ood-action btn-ood-secondary" id="btn-ood-sample">
+                                <span>Gunakan Sampel Uji Cepat</span>
+                                <span>✨</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- KONTEN HASIL NORMAL (Keyakinan >= 60%) -->
+                    <div id="normal-result-container">
+                        
+                        <!-- 1. EXECUTIVE HERO RESULT BANNER (Terbaca Jelas & Instan dalam 2 Detik) -->
+                        <div class="result-hero-banner" id="result-hero-banner">
+                            <div class="hero-verdict-left">
+                                <div class="hero-fruit-avatar" id="fruit-icon-badge">🍏</div>
+                                <div class="hero-fruit-meta">
+                                    <div class="hero-badge-row">
+                                        <span class="status-box-badge badge-fresh" id="res-condition-tag">SEGAR • GRADE A</span>
+                                        <span class="badge-latency" id="res-latency">⏱️ Latensi: 34ms</span>
+                                    </div>
+                                    <h3 class="hero-fruit-name" id="res-fruit-name">Fresh Apple (Apel Segar)</h3>
+                                    <p class="hero-one-sentence" id="res-fruit-desc">Apel dalam kondisi segar dengan tekstur renyah, aroma manis segar, kulit kencang bebas memar.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="hero-verdict-right">
+                                <div class="hero-confidence-box">
+                                    <span class="hero-conf-label">Tingkat Kepercayaan</span>
+                                    <div class="hero-conf-value value-green" id="res-confidence">100.0%</div>
+                                    <span class="hero-conf-sub">MobileNetV2 Confidence</span>
+                                </div>
+                                <div class="hero-action-buttons">
+                                    <button type="button" id="btn-export-pdf" class="btn-action-pill btn-pdf" title="Ekspor Laporan PDF">
+                                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                                        </svg>
+                                        <span>Ekspor PDF</span>
+                                    </button>
+                                    <button type="button" id="btn-audio-tts" class="btn-action-pill btn-audio" title="Dengarkan Hasil Analisis">
+                                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                                        </svg>
+                                        <span id="tts-btn-text">Putar Audio</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. TAB NAVIGASI DETAIL HASIL (Progressive Disclosure) -->
+                        <div class="result-tabs-wrapper">
+                            <div class="result-tabs-nav" role="tablist">
+                                <button type="button" class="btn-result-tab active" id="tab-btn-storage" data-tab="storage">
+                                    <span>📦 Parameter Penyimpanan &amp; Protokol QC</span>
+                                </button>
+                                <button type="button" class="btn-result-tab" id="tab-btn-ai" data-tab="ai">
+                                    <span>🔬 Analisis Mendalam AI &amp; Grad-CAM</span>
+                                </button>
+                            </div>
+
+                            <!-- PANE 1: PENYIMPANAN & KUALITAS INDUSTRI -->
+                            <div class="result-tab-pane active" id="tab-pane-storage">
+                                <!-- Wawasan Daya Simpan & Metrik Industri -->
+                                <div class="shelf-life-container" id="shelf-life-container">
+                                    <div class="shelf-life-header">
+                                        <div class="shelf-life-title-wrap">
+                                            <span class="shelf-title-icon">🧊</span>
+                                            <div>
+                                                <h4 class="shelf-title">Wawasan Daya Simpan &amp; Kontrol Kualitas Industri</h4>
+                                                <p class="shelf-subtitle">Parameter penyimpanan presisi berbasis standar sains pascapanen &amp; cold chain</p>
+                                            </div>
+                                        </div>
+                                        <span class="shelf-status-pill" id="shelf-status-badge">Masa Simpan Optimal</span>
+                                    </div>
+
+                                    <!-- 4 Grid Metrik Industri -->
+                                    <div class="shelf-metrics-grid">
+                                        <div class="shelf-metric-card">
+                                            <div class="metric-top">
+                                                <span class="m-icon">⏱️</span>
+                                                <span class="m-label">Estimasi Daya Simpan</span>
+                                            </div>
+                                            <div class="metric-value" id="shelf-metric-lifespan">3 - 4 Minggu</div>
+                                            <span class="metric-sub" id="shelf-metric-lifespan-sub">Kulkas / 5-7 Hari Ruang</span>
+                                        </div>
+
+                                        <div class="shelf-metric-card">
+                                            <div class="metric-top">
+                                                <span class="m-icon">🌡️</span>
+                                                <span class="m-label">Suhu Ideal (Cold Chain)</span>
+                                            </div>
+                                            <div class="metric-value" id="shelf-metric-temp">1°C - 4°C</div>
+                                            <span class="metric-sub">Suhu Pascapanen Aman</span>
+                                        </div>
+
+                                        <div class="shelf-metric-card">
+                                            <div class="metric-top">
+                                                <span class="m-icon">💧</span>
+                                                <span class="m-label">Kelembaban Relatif</span>
+                                            </div>
+                                            <div class="metric-value" id="shelf-metric-rh">90% - 95% RH</div>
+                                            <span class="metric-sub">Cegah Pengeriputan Kulit</span>
+                                        </div>
+
+                                        <div class="shelf-metric-card">
+                                            <div class="metric-top">
+                                                <span class="m-icon">🌬️</span>
+                                                <span class="m-label">Aktivitas Gas Etilen</span>
+                                            </div>
+                                            <div class="metric-value" id="shelf-metric-ethylene">Tinggi</div>
+                                            <span class="metric-sub" id="shelf-metric-ethylene-sub">Klimakterik Aktif</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Kotak Protokol QC -->
+                                    <div class="qc-protocol-box">
+                                        <div class="qc-protocol-header">
+                                            <span class="qc-protocol-icon">🏭</span>
+                                            <strong>Protokol QC Pergudangan &amp; Ritel:</strong>
+                                        </div>
+                                        <p class="qc-protocol-text" id="shelf-qc-protocol">
+                                            LOLOS QC GRADE A. Sangat layak didistribusikan ke etalase ritel atau dikonsumsi langsung.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Detail Karakteristik Fisik -->
+                                <div class="detail-chips-grid">
+                                    <div class="detail-chip">
+                                        <span class="chip-label">👃 Indikator Aroma &amp; Tekstur</span>
+                                        <span class="chip-value" id="res-aroma-texture">Segar alami, padat renyah</span>
+                                    </div>
+                                    <div class="detail-chip">
+                                        <span class="chip-label">🍽️ Kelayakan Konsumsi</span>
+                                        <span class="chip-value" id="res-recommendation">Sangat Direkomendasikan</span>
+                                    </div>
+                                    <div class="detail-chip full-width-chip">
+                                        <span class="chip-label">💡 Panduan Penanganan Khusus</span>
+                                        <span class="chip-value" id="res-storage-tip">Simpan di laci pendingin 1-4°C</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PANE 2: ANALISIS AI & EXPLAINABILITY (GRAD-CAM + PROBABILITAS) -->
+                            <div class="result-tab-pane" id="tab-pane-ai" style="display: none;">
+                                <!-- Explainable AI Grad-CAM -->
+                                <div class="gradcam-section" id="gradcam-container">
+                                    <div class="gradcam-header">
+                                        <div>
+                                            <h4 class="gradcam-title">Explainable AI (Grad-CAM Activation Map)</h4>
+                                            <p class="gradcam-desc">Visualisasi lapisan konvolusi terakhir MobileNetV2 yang menunjukkan area citra penentu klasifikasi.</p>
+                                        </div>
+                                        <button type="button" id="btn-toggle-gradcam" class="btn-gradcam-toggle">
+                                            <span>Tampilkan Peta Atensi</span>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Side-by-Side View -->
+                                    <div class="gradcam-preview-row" id="gradcam-preview-row" style="display: none;">
+                                        <div class="gradcam-col">
+                                            <span class="col-label">Citra Asli</span>
+                                            <div class="img-frame">
+                                                <img id="orig-image-display" src="" alt="Citra Asli">
+                                            </div>
+                                        </div>
+                                        <div class="gradcam-col">
+                                            <span class="col-label">Grad-CAM Heatmap</span>
+                                            <div class="img-frame">
+                                                <img id="gradcam-image-display" src="" alt="Grad-CAM Heatmap">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Interactive Comparison Slider -->
+                                    <div class="comparison-slider-container" id="comparison-slider" style="display: none;">
+                                        <h5 class="comparison-title">⟵ Geser untuk Membandingkan ⟶</h5>
+                                        <div class="comparison-wrapper" id="comparison-wrapper">
+                                            <div class="comparison-image-container">
+                                                <img id="comparison-original" src="" alt="Citra Asli" class="comparison-img">
+                                                <div class="comparison-overlay" id="comparison-overlay">
+                                                    <img id="comparison-gradcam" src="" alt="Grad-CAM Heatmap" class="comparison-img">
+                                                </div>
+                                                <div class="comparison-slider-handle" id="comparison-handle">
+                                                    <div class="slider-handle-line"></div>
+                                                    <div class="slider-handle-circle">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                                                            <polyline points="15 18 9 12 15 6"></polyline>
+                                                        </svg>
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="comparison-labels">
+                                                <span class="comp-label-left">Citra Asli</span>
+                                                <span class="comp-label-right">Grad-CAM Heatmap</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Probabilitas Seluruh Kelas -->
+                                <div class="probabilities-section">
+                                    <h4 class="prob-title">Distribusi Probabilitas (6 Kelas)</h4>
+                                    <div class="prob-bars-grid" id="prob-bars-container">
+                                        <!-- Populated dynamically via JS -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- FITUR 7: RIWAYAT INSPEKSI (INSPECTION HISTORY LOG) -->
+                <div class="history-section-card" id="history-section" data-reveal>
+                    <div class="history-header">
+                        <div class="history-title-wrap">
+                            <div class="history-icon-badge">📋</div>
+                            <div>
+                                <div class="history-badge-top">LOG AKTIVITAS INSPEKSI</div>
+                                <h3 class="history-title">Riwayat Hasil Klasifikasi</h3>
+                                <p class="history-subtitle">Catatan hasil scan buah yang tersimpan otomatis secara lokal di perangkat Anda.</p>
+                            </div>
+                        </div>
+                        <div class="history-header-actions">
+                            <span class="history-count-badge" id="history-count-badge">0 Riwayat</span>
+                            <button type="button" id="btn-export-history-csv" class="btn-history-action btn-history-export" title="Ekspor Riwayat ke File CSV">
+                                <span>📊 Ekspor CSV</span>
+                            </button>
+                            <button type="button" id="btn-clear-history" class="btn-history-action btn-history-clear" title="Bersihkan Seluruh Riwayat">
+                                <span>🗑️ Bersihkan</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- History List Grid -->
+                    <div class="history-list-grid" id="history-list-container">
+                        <!-- Populated dynamically via JS -->
+                        <div class="history-empty-state" id="history-empty-state">
+                            <div class="empty-icon">📂</div>
+                            <div class="empty-title">Belum Ada Riwayat Inspeksi</div>
+                            <p class="empty-desc">Lakukan pengujian gambar dari galeri, sampel cepat, atau live webcam scanner untuk mulai mencatat riwayat.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- DASHBOARD ANALITIK & KONTROL KUALITAS (CHART.JS) -->
+        <section id="dashboard" class="dashboard-section">
+            <div class="container">
+                <div class="dashboard-card" data-reveal>
+                    <!-- Dashboard Header -->
+                    <div class="dashboard-header">
+                        <div class="dashboard-header-left">
+                            <div class="dashboard-icon-badge">📊</div>
+                            <div>
+                                <span class="dashboard-badge-top">QC ANALYTICS &amp; MONITORING</span>
+                                <h2 class="dashboard-title">Dashboard Kontrol Kualitas &amp; Statistik</h2>
+                                <p class="dashboard-subtitle">Visualisasi performa klasifikasi, distribusi mutu komoditas, dan tingkat kelayakan pascapanen secara real-time.</p>
+                            </div>
+                        </div>
+                        <!-- Data Source Switcher -->
+                        <div class="dashboard-switcher" id="dashboard-switcher">
+                            <button type="button" class="btn-switch-source active" data-source="history" id="btn-source-history">
+                                <span>📱 Riwayat Sesi Pengguna</span>
+                            </button>
+                            <button type="button" class="btn-switch-source" data-source="benchmark" id="btn-source-benchmark">
+                                <span>🎯 Test Set Aktual (2.040 Citra)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 4 Summary KPI Cards Grid -->
+                    <div class="kpi-grid">
+                        <div class="kpi-card tilt-card">
+                            <div class="kpi-icon-wrap icon-total">📦</div>
+                            <div class="kpi-info">
+                                <span class="kpi-label">Total Sampel Diuji</span>
+                                <div class="kpi-value" id="kpi-total-inspections">0</div>
+                                <span class="kpi-sub" id="kpi-total-sub">Akumulasi sesi lokal</span>
+                            </div>
+                        </div>
+                        <div class="kpi-card tilt-card">
+                            <div class="kpi-icon-wrap icon-fresh">🍏</div>
+                            <div class="kpi-info">
+                                <span class="kpi-label">Tingkat Lolos (Segar)</span>
+                                <div class="kpi-value value-fresh" id="kpi-fresh-rate">0%</div>
+                                <span class="kpi-sub" id="kpi-fresh-sub">Grade A kelayakan</span>
+                            </div>
+                        </div>
+                        <div class="kpi-card tilt-card">
+                            <div class="kpi-icon-wrap icon-conf">🎯</div>
+                            <div class="kpi-info">
+                                <span class="kpi-label">Rata-rata Keyakinan</span>
+                                <div class="kpi-value" id="kpi-avg-confidence">0%</div>
+                                <span class="kpi-sub" id="kpi-conf-sub">Confidence score model</span>
+                            </div>
+                        </div>
+                        <div class="kpi-card tilt-card">
+                            <div class="kpi-icon-wrap icon-lat">⚡</div>
+                            <div class="kpi-info">
+                                <span class="kpi-label">Rata-rata Latensi</span>
+                                <div class="kpi-value" id="kpi-avg-latency">0ms</div>
+                                <span class="kpi-sub" id="kpi-lat-sub">MobileNetV2 engine</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Grid (3 Charts) -->
+                    <div class="charts-grid">
+                        <!-- Chart 1: Doughnut Chart (Fresh vs Rotten vs OOD) -->
+                        <div class="chart-card">
+                            <div class="chart-card-header">
+                                <div>
+                                    <h4 class="chart-card-title">Proporsi Kualitas Kesegaran</h4>
+                                    <p class="chart-card-desc">Rasio perbandingan buah segar vs busuk vs objek ditolak</p>
+                                </div>
+                                <span class="chart-type-tag">Doughnut</span>
+                            </div>
+                            <div class="chart-canvas-wrapper doughnut-wrapper">
+                                <canvas id="chart-freshness-ratio"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Chart 2: Grouped Bar Chart (Commodity Breakdown) -->
+                        <div class="chart-card">
+                            <div class="chart-card-header">
+                                <div>
+                                    <h4 class="chart-card-title">Kondisi Tiap Komoditas</h4>
+                                    <p class="chart-card-desc">Perbandingan mutu segar vs busuk per jenis buah</p>
+                                </div>
+                                <span class="chart-type-tag">Bar Chart</span>
+                            </div>
+                            <div class="chart-canvas-wrapper">
+                                <canvas id="chart-commodity-dist"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Chart 3: Radar Chart / Accuracy by Class -->
+                        <div class="chart-card chart-card-wide">
+                            <div class="chart-card-header">
+                                <div>
+                                    <h4 class="chart-card-title">Tolok Ukur &amp; Presisi Model (6 Kategori)</h4>
+                                    <p class="chart-card-desc">Evaluasi metrik stabilitas klasifikasi per varian kelas buah</p>
+                                </div>
+                                <span class="chart-type-tag">Radar Metrics</span>
+                            </div>
+                            <div class="chart-canvas-wrapper radar-wrapper">
+                                <canvas id="chart-model-radar"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TEKNOLOGI & MODEL ARCHITECTURE -->
+        <section id="teknologi" class="tech-section">
+            <div class="container">
+                <div class="tech-card" data-reveal>
+                    <div class="tech-card-header">
+                        <span class="tech-badge">Spesifikasi Arsitektur</span>
+                        <h2 class="tech-title">Deep Learning Pipeline &amp; MobileNetV2</h2>
+                    </div>
+                    <div class="tech-specs-grid">
+                        <div class="tech-spec-item tilt-card">
+                            <span class="spec-label">Base Architecture</span>
+                            <span class="spec-value">MobileNetV2 (Pretrained on ImageNet)</span>
+                        </div>
+                        <div class="tech-spec-item tilt-card">
+                            <span class="spec-label">Input Shape</span>
+                            <span class="spec-value">224 × 224 × 3 (RGB)</span>
+                        </div>
+                        <div class="tech-spec-item tilt-card">
+                            <span class="spec-label">Fine-Tuned Layers</span>
+                            <span class="spec-value">Top 30 Inverted Residual Layers</span>
+                        </div>
+                        <div class="tech-spec-item tilt-card">
+                            <span class="spec-label">Training Loss</span>
+                            <span class="spec-value">Categorical Crossentropy (Label Smoothing 0.05)</span>
+                        </div>
+                        <div class="tech-spec-item tilt-card">
+                            <span class="spec-label">Optimizer</span>
+                            <span class="spec-value">Adam (lr: 1e-4 initial &rarr; 1e-5 fine-tuning)</span>
+                        </div>
+                        <div class="tech-spec-item tilt-card">
+                            <span class="spec-label">Deployment Format</span>
+                            <span class="spec-value">Keras .keras (11.1MB) &amp; TFLite (2.58MB)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <div class="brand-icon">🍏</div>
+                <span class="brand-text">FruitFresh AI</span>
+                <p class="footer-desc">Proyek Machine Learning &amp; Computer Vision Semester 7 Informatika. Klasifikasi Kualitas dan Kesegaran Buah Berbasis MobileNetV2.</p>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 FruitFresh AI. Terinspirasi dari rancangan @devilda_id. Ditenagai oleh TensorFlow, Keras, dan Flask.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Custom JS -->
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

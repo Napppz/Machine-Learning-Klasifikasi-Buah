@@ -14,8 +14,14 @@ import numpy as np
 import onnxruntime as ort
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-MODEL_PATH = PROJECT_ROOT / "models" / "model.onnx"
-CLASS_NAMES_PATH = PROJECT_ROOT / "models" / "class_names.json"
+
+# Check for model in api/models (Vercel) or models (local)
+if (PROJECT_ROOT / "api" / "models" / "model.onnx").exists():
+    MODEL_PATH = PROJECT_ROOT / "api" / "models" / "model.onnx"
+    CLASS_NAMES_PATH = PROJECT_ROOT / "api" / "models" / "class_names.json"
+else:
+    MODEL_PATH = PROJECT_ROOT / "models" / "model.onnx"
+    CLASS_NAMES_PATH = PROJECT_ROOT / "models" / "class_names.json"
 
 _SESSION = None
 _CLASS_NAMES = None
