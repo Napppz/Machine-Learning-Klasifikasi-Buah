@@ -262,7 +262,13 @@ def catch_all(path):
         return send_from_directory(str(target), filename)
         
     # Landing Page
-    return render_template("index.html")
+    from flask import make_response
+    resp = make_response(render_template("index.html"))
+    resp.headers["X-Debug-Matched-Path"] = str(request.headers.get("x-matched-path", "none"))
+    resp.headers["X-Debug-Forwarded-Uri"] = str(request.headers.get("x-forwarded-uri", "none"))
+    resp.headers["X-Debug-Path-Info"] = str(request.environ.get("PATH_INFO", "none"))
+    resp.headers["X-Debug-All-Headers"] = ",".join(request.headers.keys())
+    return resp
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5005, debug=True)
