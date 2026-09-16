@@ -235,6 +235,14 @@ def handle_predict():
 @app.route("/", defaults={"path": ""}, methods=["GET", "POST"])
 @app.route("/<path:path>", methods=["GET", "POST"])
 def catch_all(path):
+    if "debug" in request.url or "debug" in path or request.args.get("debug"):
+        return jsonify({
+            "path": path,
+            "request.path": request.path,
+            "request.url": request.url,
+            "headers": dict(request.headers),
+            "environ": {k: str(v) for k, v in request.environ.items() if isinstance(v, (str, int, float, bool))}
+        })
     clean = path.strip("/").lower()
     
     # Endpoint Predict
