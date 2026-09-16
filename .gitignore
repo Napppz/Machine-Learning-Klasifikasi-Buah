@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Caches and environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Dataset (Dataset gambar berukuran besar tidak disimpan di repository Git)
+dataset/*
+!dataset/.gitkeep
+
+# Model weights (Model produksi disertakan untuk deployment cloud)
+models/*.keras
+models/*.h5
+!models/best_model.keras
+!models/class_names.json
+!models/model.tflite
+!models/.gitkeep
+
+# Results & Logs
+*.log
