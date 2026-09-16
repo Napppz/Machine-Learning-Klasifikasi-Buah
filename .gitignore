@@ -23,6 +23,9 @@ models/*.h5
 !models/best_model.keras
 !models/class_names.json
 !models/model.tflite
+
+# Local binaries
+cloudflared.exe
 !models/.gitkeep
 
 # Results & Logs
