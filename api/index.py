@@ -235,40 +235,27 @@ def handle_predict():
 @app.route("/", defaults={"path": ""}, methods=["GET", "POST"])
 @app.route("/<path:path>", methods=["GET", "POST"])
 def catch_all(path):
-    if "debug" in request.url or "debug" in path or request.args.get("debug"):
-        return jsonify({
-            "path": path,
-            "request.path": request.path,
-            "request.url": request.url,
-            "headers": dict(request.headers),
-            "environ": {k: str(v) for k, v in request.environ.items() if isinstance(v, (str, int, float, bool))}
-        })
-    clean = path.strip("/").lower()
+    target = request.args.get("__path__") or path or request.path or ""
+    clean = target.strip("/").lower()
     
     # Endpoint Predict
-    if clean.endswith("predict"):
+    if "predict" in clean:
         if request.method == "POST":
             return handle_predict()
         return jsonify({"status": "ERROR", "message": "Method POST required"}), 405
         
     # Endpoint Samples
-    if clean.endswith("samples"):
+    if "samples" in clean:
         return handle_samples()
         
     # Static Assets (Fallback)
     if "static/" in clean:
-        filename = path.split("static/", 1)[1]
-        target = CURRENT_DIR / "static" if (CURRENT_DIR / "static").exists() else PROJECT_ROOT / "static"
-        return send_from_directory(str(target), filename)
+        filename = clean.split("static/", 1)[1]
+        target_dir = CURRENT_DIR / "static" if (CURRENT_DIR / "static").exists() else PROJECT_ROOT / "static"
+        return send_from_directory(str(target_dir), filename)
         
     # Landing Page
-    from flask import make_response
-    resp = make_response(render_template("index.html"))
-    resp.headers["X-Debug-Matched-Path"] = str(request.headers.get("x-matched-path", "none"))
-    resp.headers["X-Debug-Forwarded-Uri"] = str(request.headers.get("x-forwarded-uri", "none"))
-    resp.headers["X-Debug-Path-Info"] = str(request.environ.get("PATH_INFO", "none"))
-    resp.headers["X-Debug-All-Headers"] = ",".join(request.headers.keys())
-    return resp
+    return render_template("index.html")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5005, debug=True)
