@@ -1,16 +1,7 @@
-# Core Deep Learning (CPU-optimized for Cloud Free Tier)
-tensorflow-cpu>=2.15.0
+# Lightweight ONNX Runtime Dependencies for Vercel Serverless (< 75 MB)
+onnxruntime>=1.18.0
 numpy>=1.24.0,<2.0.0
 pillow>=10.0.0
-
-# Framework & UI
-streamlit>=1.30.0
 flask>=3.0.0
 flask-cors>=4.0.0
 gunicorn>=21.2.0
-
-# Data Analysis & Metrics
-pandas>=2.0.0
-scikit-learn>=1.3.0
-matplotlib>=3.7.0
-seaborn>=0.12.0
