@@ -140,15 +140,18 @@ FRUIT_METADATA = {
 }
 
 @app.route("/", methods=["GET"])
+@app.route("/api", methods=["GET"])
 def index():
     return render_template("index.html")
 
 @app.route("/static/<path:filename>")
+@app.route("/api/static/<path:filename>")
 def serve_static(filename):
     target = CURRENT_DIR / "static" if (CURRENT_DIR / "static").exists() else PROJECT_ROOT / "static"
     return send_from_directory(str(target), filename)
 
 @app.route("/samples", methods=["GET"])
+@app.route("/api/samples", methods=["GET"])
 def get_samples():
     samples = [
         {"id": "fresh_apple", "file": "fresh_apple.png", "name": "Fresh Apple", "class": "freshapples", "icon": "🍏", "type": "Apel Segar"},
@@ -161,6 +164,7 @@ def get_samples():
     return jsonify({"status": "SUCCESS", "samples": samples})
 
 @app.route("/predict", methods=["POST"])
+@app.route("/api/predict", methods=["POST"])
 def predict():
     start_time = time.perf_counter()
     image_to_predict = None
