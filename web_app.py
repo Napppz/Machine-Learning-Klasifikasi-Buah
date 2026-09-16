@@ -296,7 +296,17 @@ def get_samples():
     ]
     return jsonify({"status": "SUCCESS", "samples": samples})
 
-if __name__ == "__main__":
+# Universal Adapter: Deteksi apakah script dipanggil oleh Streamlit Runner (Streamlit Cloud)
+try:
+    import streamlit as st
+    is_streamlit_runner = st.runtime.exists()
+except Exception:
+    is_streamlit_runner = False
+
+if is_streamlit_runner:
+    import app as st_app
+    st_app.main()
+elif __name__ == "__main__":
     port = int(os.environ.get("PORT", 5005))
     print("\n=======================================================")
     print(" [FruitFresh AI] Web Application Server Running")
@@ -304,3 +314,4 @@ if __name__ == "__main__":
     print(f" URL Akses Lokal : http://127.0.0.1:{port}")
     print("=======================================================\n")
     app.run(host="0.0.0.0", port=port, debug=False)
+
