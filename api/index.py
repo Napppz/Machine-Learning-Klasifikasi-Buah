@@ -139,20 +139,7 @@ FRUIT_METADATA = {
     }
 }
 
-@app.route("/", methods=["GET"])
-@app.route("/api", methods=["GET"])
-def index():
-    return render_template("index.html")
-
-@app.route("/static/<path:filename>")
-@app.route("/api/static/<path:filename>")
-def serve_static(filename):
-    target = CURRENT_DIR / "static" if (CURRENT_DIR / "static").exists() else PROJECT_ROOT / "static"
-    return send_from_directory(str(target), filename)
-
-@app.route("/samples", methods=["GET"])
-@app.route("/api/samples", methods=["GET"])
-def get_samples():
+def handle_samples():
     samples = [
         {"id": "fresh_apple", "file": "fresh_apple.png", "name": "Fresh Apple", "class": "freshapples", "icon": "🍏", "type": "Apel Segar"},
         {"id": "rotten_apple", "file": "rotten_apple.png", "name": "Rotten Apple", "class": "rottenapples", "icon": "🍎", "type": "Apel Busuk"},
@@ -163,9 +150,7 @@ def get_samples():
     ]
     return jsonify({"status": "SUCCESS", "samples": samples})
 
-@app.route("/predict", methods=["POST"])
-@app.route("/api/predict", methods=["POST"])
-def predict():
+def handle_predict():
     start_time = time.perf_counter()
     image_to_predict = None
     orig_b64 = None
@@ -183,7 +168,7 @@ def predict():
         payload = request.get_json()
         if "sample" in payload:
             sample_name = payload["sample"]
-            sample_path = PROJECT_ROOT / "static" / "samples" / sample_name
+            sample_path = CURRENT_DIR / "static" / "samples" / sample_name if (CURRENT_DIR / "static" / "samples" / sample_name).exists() else PROJECT_ROOT / "static" / "samples" / sample_name
             if sample_path.exists():
                 image_to_predict = Image.open(sample_path)
                 with open(sample_path, "rb") as f:
@@ -247,5 +232,30 @@ def predict():
         "gradcam_image": None
     })
 
+@app.route("/", defaults={"path": ""}, methods=["GET", "POST"])
+@app.route("/<path:path>", methods=["GET", "POST"])
+def catch_all(path):
+    clean = path.strip("/").lower()
+    
+    # Endpoint Predict
+    if clean.endswith("predict"):
+        if request.method == "POST":
+            return handle_predict()
+        return jsonify({"status": "ERROR", "message": "Method POST required"}), 405
+        
+    # Endpoint Samples
+    if clean.endswith("samples"):
+        return handle_samples()
+        
+    # Static Assets (Fallback)
+    if "static/" in clean:
+        filename = path.split("static/", 1)[1]
+        target = CURRENT_DIR / "static" if (CURRENT_DIR / "static").exists() else PROJECT_ROOT / "static"
+        return send_from_directory(str(target), filename)
+        
+    # Landing Page
+    return render_template("index.html")
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5005, debug=True)
+
