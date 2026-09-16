@@ -1,3 +1,13 @@
+---
+title: FruitFresh AI
+emoji: 🍏
+colorFrom: green
+colorTo: blue
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # 🍎 FruitFresh AI: Klasifikasi Kualitas & Kesegaran Buah Menggunakan Deep Learning
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
